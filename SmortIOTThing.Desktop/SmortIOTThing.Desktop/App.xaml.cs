@@ -43,6 +43,7 @@ namespace SmortIOTThing.Desktop
             var services = new ServiceCollection();
 
             services.AddSingleton<IRequestManager, RequestManager>();
+            services.AddTransient<ITemperatureManager, TemperatureManger>();
             services.AddSingleton<MainWindow>();
             return services.BuildServiceProvider();
         }
