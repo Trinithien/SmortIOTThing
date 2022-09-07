@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI.Xaml;
+using SmortIOTThing.Desktop.Interfaces;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -10,14 +11,16 @@ namespace SmortIOTThing.Desktop
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        public MainWindow()
+        readonly IRequestManager _requestManager;
+        public MainWindow(IRequestManager requestManager)
         {
+            _requestManager = requestManager;
             this.InitializeComponent();
         }
 
         private void myButton_Click(object sender, RoutedEventArgs e)
         {
-            myButton.Content = "Clicked";
+            myButton.Content = _requestManager.GetWelcomeMessage();
         }
     }
 }

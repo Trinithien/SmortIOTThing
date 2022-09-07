@@ -1,5 +1,7 @@
 ﻿using Microsoft.UI.Xaml;
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SmortIOTThing.Desktop.Interfaces;
+using SmortIOTThing.Desktop.Managers;
 using System;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -40,6 +42,7 @@ namespace SmortIOTThing.Desktop
         {
             var services = new ServiceCollection();
 
+            services.AddSingleton<IRequestManager, RequestManager>();
             services.AddSingleton<MainWindow>();
             return services.BuildServiceProvider();
         }
