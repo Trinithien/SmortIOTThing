@@ -18,7 +18,30 @@ namespace SmortIOTThing.Desktop
         /// </summary>
         public App()
         {
+            Services = ConfigureServices();
+
             this.InitializeComponent();
+        }
+
+        /// <summary>
+        /// Gets the current <see cref="App"/> instance in use
+        /// </summary>
+        public new static App Current => (App)Application.Current;
+
+        /// <summary>
+        /// Gets the <see cref="IServiceProvider"/> instance to resolve application services.
+        /// </summary>
+        public IServiceProvider Services { get; }
+
+        /// <summary>
+        /// Configures the services for the application.
+        /// </summary>
+        private static IServiceProvider ConfigureServices()
+        {
+            var services = new ServiceCollection();
+
+            services.AddSingleton<MainWindow>();
+            return services.BuildServiceProvider();
         }
 
         /// <summary>
@@ -28,10 +51,14 @@ namespace SmortIOTThing.Desktop
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
+            var m_window = Services.GetRequiredService<MainWindow>();
+            //// Do not repeat app initialization when the Window already has content,
+            //// just ensure that the window is active
+
+            // Ensure the current window is active
             m_window.Activate();
         }
 
-        private Window m_window;
+        
     }
 }
