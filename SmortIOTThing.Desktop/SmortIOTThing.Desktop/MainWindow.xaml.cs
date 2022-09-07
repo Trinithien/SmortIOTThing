@@ -1,5 +1,9 @@
 ﻿using Microsoft.UI.Xaml;
 using SmortIOTThing.Desktop.Interfaces;
+using System.Threading.Tasks;
+using System.Threading;
+using System;
+using Windows.Devices.Geolocation;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -16,11 +20,15 @@ namespace SmortIOTThing.Desktop
         {
             _requestManager = requestManager;
             this.InitializeComponent();
+            WelcomeMessage.Text = _requestManager.GetWelcomeMessage();
         }
 
-        private void myButton_Click(object sender, RoutedEventArgs e)
+        private void UpdateStatus(object sender, object e)
         {
-            myButton.Content = _requestManager.GetWelcomeMessage();
+            TemperatureStatus.Text = _requestManager.GetTemperatureStatus();
         }
+        
     }
+    
+    
 }
