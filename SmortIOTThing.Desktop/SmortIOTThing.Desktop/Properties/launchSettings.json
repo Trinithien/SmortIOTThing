@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SmortIOTThing.Desktop (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "SmortIOTThing.Desktop (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
