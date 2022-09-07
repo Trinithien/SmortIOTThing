@@ -3,6 +3,7 @@
 using SmortIOTThing.Desktop.Interfaces;
 using SmortIOTThing.Desktop.Managers;
 using System;
+using SmortIOTThing.Desktop.Events;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -44,6 +45,8 @@ namespace SmortIOTThing.Desktop
 
             services.AddTransient<IRequestManager, RequestManager>();
             services.AddTransient<ITemperatureManager, TemperatureManger>();
+            services.AddSingleton<ITemperatureSensorStatus, TemperatureSensorStatus>();
+
             services.AddSingleton<MainWindow>();
             return services.BuildServiceProvider();
         }

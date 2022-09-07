@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using Windows.Devices.Geolocation;
+using SmortIOTThing.Desktop.EventArguements;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -16,9 +17,10 @@ namespace SmortIOTThing.Desktop
     public sealed partial class MainWindow : Window
     {
         readonly IRequestManager _requestManager;
-        public MainWindow(IRequestManager requestManager)
+        public MainWindow(IRequestManager requestManager,ITemperatureSensorStatus temperatureSensorStatus)
         {
             _requestManager = requestManager;
+            temperatureSensorStatus.StatusChanged += UpdateStatus;
             this.InitializeComponent();
             WelcomeMessage.Text = _requestManager.GetWelcomeMessage();
         }
