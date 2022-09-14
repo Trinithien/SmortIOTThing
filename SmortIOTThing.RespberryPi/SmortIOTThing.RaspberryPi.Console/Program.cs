@@ -1,10 +1,20 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using static System.Net.Mime.MediaTypeNames;
-using System.Drawing;
+//using static System.Net.Mime.MediaTypeNames;
+//using System.Drawing;
 using System.IO.Ports;
 
+Console.WriteLine("Available Ports:");
+foreach (string s in SerialPort.GetPortNames())
+{
+    Console.WriteLine("   {0}", s);
+}
+// Not a smart way of handling this shizz, works for now
+// comPort: /dev/ttyACM0 // Should be
+// Baudrate: 9600 // Should be // Actually is 10000
+string? comPort = Console.ReadLine(); // Comport velg meg!
+//Console.WriteLine("Hello, World!");
 // COmment for teh hellz
-Console.WriteLine("Hello, World!");
+//Console.WriteLine("Hello, World!");
 try
 {
     using (SerialPort port = new SerialPort("Comport VELG MEG !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", 10000, Parity.None))
