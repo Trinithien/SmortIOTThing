@@ -3,6 +3,7 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Drawing;
 using System.IO.Ports;
 
+// COmment for teh hellz
 Console.WriteLine("Hello, World!");
 try
 {
