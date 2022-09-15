@@ -1,4 +1,5 @@
 ﻿using Microsoft.UI;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
@@ -6,6 +7,7 @@ using SmortIOTThing.Desktop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Radios;
@@ -112,19 +114,29 @@ namespace SmortIOTThing.Desktop
             return line;
 
         }
-        private Shape[] CreateSegments(double width,double height,double lineLenght, Color lineColor)
+        private async Task<Shape[]> CreateSegments(double width,double height,double lineLenght, Color lineColor, TextBlock[] blocksX, TextBlock[] blocksY)
         {
             var shapes = new List<Shape>();
             var segmentLenghtX = width / segmentsX;
             var halfLineLength = lineLenght / 2;
-            for (int i = 1; i < segmentsX; i++)
+            for (int i = 0; i < segmentsX; i++)
             {
-                shapes.Add(CreateLine(new Point((float)segmentLenghtX*i,height+ halfLineLength), new Point((float)segmentLenghtX*i,height- halfLineLength),lineColor));
+                var lowerPoint = new Point((float)segmentLenghtX * i, height + halfLineLength);
+                var higherPoint = new Point((float)segmentLenghtX * i, height - halfLineLength);
+                shapes.Add(CreateLine(lowerPoint, higherPoint, lineColor));
+                blocksX[i].Translation = new Vector3 { X = lowerPoint._x, Y = lowerPoint._y };
+                blocksX[i].Text = $"{(minX + i*deltaX/segmentsX).ToString("dd/MM hh:mm:ss")}";
             }
             var segmentLengthY = height / segmentsY;
-            for (int i = 1; i < segmentsY; i++)
+            for (int i = 0; i < segmentsY; i++)
             {
-                shapes.Add(CreateLine(new Point((float)halfLineLength,segmentLengthY*i),new Point((float)-halfLineLength,segmentLengthY*i),lineColor));
+                var leftPoint = new Point((float)-halfLineLength, height-segmentLengthY * i);
+                var rightPoint = new Point((float)halfLineLength, height-segmentLengthY * i);
+                shapes.Add(CreateLine(leftPoint,rightPoint,lineColor));
+                blocksY[i].Text = $"{Math.Round(minY+i*deltaY/segmentsY,2)}°C";
+                blocksY[i].Measure(new Size(0,0));
+                await Task.Delay(10);
+                blocksY[i].Translation = new Vector3 { X = leftPoint._x - (float)blocksY[i].ActualWidth, Y = leftPoint._y - (float)blocksY[i].ActualHeight/2 };
             }
             return shapes.ToArray();
         }
@@ -135,7 +147,7 @@ namespace SmortIOTThing.Desktop
 
             foreach (var point in points)
             {
-                var relativeValueY = point.Value - minY;
+                var relativeValueY = maxY - point.Value;
                 var percentileY = relativeValueY / deltaY;
 
                 var relativeValueX = point.TimeStamp - minX;
@@ -156,15 +168,25 @@ namespace SmortIOTThing.Desktop
             return line;
         }
 
-        public async Task CreateLineChart(Grid root,ChartPoint[] points, TimeSpan resolutionX, double resolutionY, double width, double height , Color backlineColor, Color outline, Color lineColor,Color background, Brush textForeground)
+        public async Task CreateLineChart(Grid root,ChartPoint[] points, TimeSpan resolutionX, double resolutionY , Color backlineColor, Color outline, Color lineColor,Color background, Brush textForeground)
         {
+            root.Measure(new Windows.Foundation.Size(0, 0));
+            double width = root.ActualWidth, height = root.ActualHeight;
             InitChart(points,resolutionX,resolutionY,width,height, textForeground, out var values, out var blocksX,out var blocksY);
 
-            List<Shape> shapes = new List<Shape>();
+            var shapes = new List<UIElement>();
+            foreach (var block in blocksX)
+            {
+                shapes.Add(block);
+            }
+            foreach (var block in blocksY)
+            {
+                shapes.Add(block);
+            }
 
             shapes.Add(CreateBackground(width, height, background));
             shapes.Add(CreateBorder(width, height, outline));
-            foreach (var shape in CreateSegments(width,height,20,backlineColor))
+            foreach (var shape in await CreateSegments(width,height,20,backlineColor,blocksX,blocksY))
             {
                 shapes.Add(shape);
             }

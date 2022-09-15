@@ -20,30 +20,65 @@ namespace SmortIOTThing.Desktop
     public sealed partial class MainWindow : Window
     {
         readonly IRequestManager _requestManager;
-        public MainWindow(IRequestManager requestManager,ITemperatureSensorStatus temperatureSensorStatus)
+        public MainWindow(IRequestManager requestManager, ITemperatureSensorStatus temperatureSensorStatus)
         {
             _requestManager = requestManager;
             temperatureSensorStatus.StatusChanged += UpdateStatus;
             this.InitializeComponent();
             WelcomeMessage.Text = _requestManager.GetWelcomeMessage();
-
-        }
-
-        private async void UpdateStatus(object sender, object e)
-        {
-            TemperatureStatus.Text = _requestManager.GetTemperatureStatus(); var lineChart = new LineChart();
-            var points = new List<ChartPoint>();
             Random random = new Random();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10; i++)
+            {
+                points.Add(new ChartPoint { Value = 15 + i, TimeStamp = DateTimeOffset.Now.AddSeconds(i) });
+            }
+            for (int i = 10; i < 100; i++)
             {
                 points.Add(new ChartPoint { Value = random.NextDouble() * 10 + 15, TimeStamp = DateTimeOffset.Now.AddSeconds(i) });
             }
-            root.Measure(new Windows.Foundation.Size(0,0));
-            await lineChart.CreateLineChart(root, points.ToArray(), new TimeSpan(0, 0, 10), 2, root.ActualWidth, root.ActualHeight, backlineColor: Colors.White, outline: Colors.Gray, lineColor: Colors.Purple,background: Colors.Pink, new SolidColorBrush(Colors.Gold));
-
         }
 
+        List<ChartPoint> points = new List<ChartPoint>();
+        private async void UpdateStatus(object sender, object e)
+        {
+            TemperatureStatus.Text = _requestManager.GetTemperatureStatus();
+            Random random = new Random();
+            points.Clear();
+            points.Add(new ChartPoint { Value = 20, TimeStamp = DateTimeOffset.Now });
+
+            for (int i = 1; i < 100; i++)
+            {
+                points.Add(new ChartPoint { Value = points[i - 1].Value + (random.NextDouble() - 0.5) / 10, TimeStamp = DateTimeOffset.Now.AddSeconds(i) });
+            }
+
+            var chart = new LineChart();
+            await chart.CreateLineChart(root,
+                        points.ToArray(),
+                        resolutionX: new TimeSpan(0, 0, 10),
+                        resolutionY: 0.1,
+                        backlineColor: Colors.White,
+                        outline: Colors.Gray,
+                        lineColor: Colors.Purple,
+                        background: Colors.Pink,
+                        new SolidColorBrush(Colors.Gold));
+
+
+        }
+        private async void Window_SizeChanged(object sender, WindowSizeChangedEventArgs args)
+        {
+
+            var chart = new LineChart();
+            await chart.CreateLineChart(root,
+                points.ToArray(),
+                resolutionX: new TimeSpan(0, 0, 10),
+                resolutionY: 0.1,
+                backlineColor: Colors.White,
+                outline: Colors.Gray,
+                lineColor: Colors.Purple,
+                background: Colors.Pink,
+                new SolidColorBrush(Colors.Gold));
+
+        }
     }
-    
-    
+
+
 }
