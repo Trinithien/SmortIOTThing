@@ -1,14 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SmortIOTThing.Desktop
+namespace DjupvikCharts
 {
-    public class ChartPoint
+    public class SpiderPoint
     {
         public double Value { get; set; }
-        public DateTimeOffset TimeStamp { get; set; }
+        public string Text { get; set; }
+    }
+    public class LinePoint
+    {
+        public double Value { get; set; }
+        public DateTimeOffset Timestamp { get; set; }
+        public string Text { get; set; }
     }
 }
