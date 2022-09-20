@@ -22,7 +22,7 @@ namespace SmortIOTThing.Desktop.Managers
             float current, average, min, max;
             current = _temperatureManager.GetCurrentTemperature(name);
             average = _temperatureManager.GetAverageTemperature(name, time);
-            min = _temperatureManager.GetMïnTemperature(name, time);
+            min = _temperatureManager.GetMinTemperature(name, time);
             max = _temperatureManager.GetMaxTemperature(name, time);
 
             string status =

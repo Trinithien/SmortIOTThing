@@ -26,57 +26,65 @@ namespace SmortIOTThing.Desktop
             temperatureSensorStatus.StatusChanged += UpdateStatus;
             this.InitializeComponent();
             WelcomeMessage.Text = _requestManager.GetWelcomeMessage();
+            allPoints.Add(new ChartPoint { Value = 20, TimeStamp = DateTimeOffset.Now.AddSeconds(-100) });
             Random random = new Random();
-            for (int i = 0; i < 10; i++)
+            for (int i = 1; i < 100; i++)
             {
-                points.Add(new ChartPoint { Value = 15 + i, TimeStamp = DateTimeOffset.Now.AddSeconds(i) });
-            }
-            for (int i = 10; i < 100; i++)
-            {
-                points.Add(new ChartPoint { Value = random.NextDouble() * 10 + 15, TimeStamp = DateTimeOffset.Now.AddSeconds(i) });
+                allPoints.Add(new ChartPoint { Value = allPoints[^1].Value + (random.NextDouble() - 0.5) / 10, TimeStamp = DateTimeOffset.Now.AddSeconds(i-100) });
+
             }
         }
 
         List<ChartPoint> points = new List<ChartPoint>();
+        List<ChartPoint> allPoints = new();
         private async void UpdateStatus(object sender, object e)
         {
             TemperatureStatus.Text = _requestManager.GetTemperatureStatus();
-            Random random = new Random();
-            points.Clear();
-            points.Add(new ChartPoint { Value = 20, TimeStamp = DateTimeOffset.Now });
-
-            for (int i = 1; i < 100; i++)
+            
+            if (allPoints.Count <= 100) 
             {
-                points.Add(new ChartPoint { Value = points[i - 1].Value + (random.NextDouble() - 0.5) / 10, TimeStamp = DateTimeOffset.Now.AddSeconds(i) });
+                if (allPoints.Count < 1)
+                    points.Add(new ChartPoint { Value = 20, TimeStamp = DateTimeOffset.Now });
+                points = allPoints;
             }
-
-            var chart = new LineChart();
-            await chart.CreateLineChart(root,
-                        points.ToArray(),
-                        resolutionX: new TimeSpan(0, 0, 10),
-                        resolutionY: 0.1,
-                        backlineColor: Colors.White,
-                        outline: Colors.Gray,
-                        lineColor: Colors.Purple,
-                        background: Colors.Pink,
-                        new SolidColorBrush(Colors.Gold));
+            else
+            {
+                points = allPoints.GetRange(allPoints.Count - 101, 100);
+            }
+            Random random = new Random();
+            allPoints.Add(new ChartPoint { Value = allPoints[^1].Value + (random.NextDouble() - 0.5) / 10, TimeStamp = DateTimeOffset.Now });
 
 
+            if (points.Count > 0)
+            {
+                var chart = new LineChart();
+                await chart.CreateLineChart(root,
+                            points.ToArray(),
+                            resolutionX: new TimeSpan(0, 0, 10),
+                            resolutionY: 0.1,
+                            backlineColor: Colors.White,
+                            outline: Colors.Gray,
+                            lineColor: Colors.Purple,
+                            background: Colors.Pink,
+                            new SolidColorBrush(Colors.Gold));
+
+            }
         }
         private async void Window_SizeChanged(object sender, WindowSizeChangedEventArgs args)
         {
-
-            var chart = new LineChart();
-            await chart.CreateLineChart(root,
-                points.ToArray(),
-                resolutionX: new TimeSpan(0, 0, 10),
-                resolutionY: 0.1,
-                backlineColor: Colors.White,
-                outline: Colors.Gray,
-                lineColor: Colors.Purple,
-                background: Colors.Pink,
-                new SolidColorBrush(Colors.Gold));
-
+            if (points.Count > 0)
+            {
+                var chart = new LineChart();
+                await chart.CreateLineChart(root,
+                    points.ToArray(),
+                    resolutionX: new TimeSpan(0, 0, 10),
+                    resolutionY: 0.1,
+                    backlineColor: Colors.White,
+                    outline: Colors.Gray,
+                    lineColor: Colors.Purple,
+                    background: Colors.Pink,
+                    new SolidColorBrush(Colors.Gold));
+            }
         }
     }
 

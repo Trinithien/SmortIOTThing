@@ -27,7 +27,7 @@ namespace SmortIOTThing.Desktop.Managers
             return (float)(15 + random.NextDouble() * 10); //Gir ett random tall mellom 15-25
         }
 
-        public float GetMïnTemperature(string name, TimeSpan time)
+        public float GetMinTemperature(string name, TimeSpan time)
         {
             Random random = new Random();
             return (float)(15 + random.NextDouble() * 10); //Gir ett random tall mellom 15-25

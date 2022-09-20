@@ -25,10 +25,10 @@ namespace SmortIOTThing.Desktop.Events
 
         private async Task CheckStatusAsync()
         {
-            var periodicTimer = new PeriodicTimer(new TimeSpan(0, 0, 1));
+            var periodicTimer = new PeriodicTimer(new TimeSpan(0, 0, 0,0,10));
             while (await periodicTimer.WaitForNextTickAsync())
             {
-                var e = new TemperatureSensorEventArgs { Names = new[] { "Temparature Sensor 1" } };
+                var e = new TemperatureSensorEventArgs { Names = new[] { "Temparature Sensor 1" }};
                 OnStatusChanged(e);
             }
         }
