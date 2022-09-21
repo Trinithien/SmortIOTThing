@@ -21,15 +21,29 @@ try
         b[0] = (byte)Convert.ToInt32("255");
         b[1] = (byte)Convert.ToInt32("255");
         b[2] = (byte)Convert.ToInt32("255");
+        port.ReadTimeout = 1500;
+        port.WriteTimeout = 1500;
         port.Open();
-        port.Write(b, 0, 3);
-        while (port.BytesToRead < 3) {}
-        b = new byte[3];
-        port.Read(b, 0, 3);
-        string b0 = b[0].ToString();
-        string b1 = b[1].ToString();
-        string b2 = b[2].ToString();
-        Console.WriteLine($"{b0},{b1},{b2}");
+        //port.Write(b, 0, 3);
+        //while (port.BytesToRead < 3) {}
+        //b = new byte[3];
+        //port.Read(b, 0, 3);
+        try
+        {
+            while (true)
+            {
+                string message = port.ReadLine();
+                Console.WriteLine(message);
+            }
+        }
+        catch (TimeoutException)
+        {
+        }
+        port.Close();
+        // string b0 = b[0].ToString();
+        // string b1 = b[1].ToString();
+        // string b2 = b[2].ToString();
+        //Console.WriteLine($"{b0},{b1},{b2}");
     }
 
 }
