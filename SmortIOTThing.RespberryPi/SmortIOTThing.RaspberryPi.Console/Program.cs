@@ -8,16 +8,14 @@ foreach (string s in SerialPort.GetPortNames())
 {
     Console.WriteLine("   {0}", s);
 }
-// Not a smart way of handling this shizz, works for now
 // comPort: /dev/ttyACM0 // Should be
 // Baudrate: 9600 // Should be // Actually is 10000
+int baudrate = 9600;
+Console.WriteLine("Select comport: ");
 string? comPort = Console.ReadLine(); // Comport velg meg!
-//Console.WriteLine("Hello, World!");
-// COmment for teh hellz
-//Console.WriteLine("Hello, World!");
 try
 {
-    using (SerialPort port = new SerialPort("Comport VELG MEG !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", 10000, Parity.None))
+    using (SerialPort port = new SerialPort(comPort!, baudrate, Parity.None))
     {
         byte[] b = new byte[3];
         b[0] = (byte)Convert.ToInt32("255");
