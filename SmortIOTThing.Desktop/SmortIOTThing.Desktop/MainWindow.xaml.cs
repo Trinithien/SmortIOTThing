@@ -1,14 +1,13 @@
-﻿using Microsoft.UI.Xaml;
-using SmortIOTThing.Desktop.Interfaces;
-using System.Threading.Tasks;
-using System.Threading;
-using System;
-using Windows.Devices.Geolocation;
-using SmortIOTThing.Desktop.EventArguements;
-using System.Collections.Generic;
+﻿using DjupvikCharts;
 using Microsoft.UI;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
-using DjupvikCharts;
+using SmortIOTThing.Desktop.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Windows.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -26,15 +25,8 @@ namespace SmortIOTThing.Desktop
             _requestManager = requestManager;
             temperatureSensorStatus.StatusChanged += UpdateStatus;
             this.InitializeComponent();
-            WelcomeMessage.Text = _requestManager.GetWelcomeMessage();
             InitLineChart();
-            allPoints.Add(new LinePoint { Value = 20, Timestamp = DateTimeOffset.Now.AddSeconds(-100) });
-            Random random = new Random();
-            for (int i = 1; i < 100; i++)
-            {
-                allPoints.Add(new LinePoint { Value = allPoints[^1].Value + (random.NextDouble() - 0.5) / 10, Timestamp = DateTimeOffset.Now.AddSeconds(i-100) });
-
-            }
+            
         }
 
         List<LinePoint> points = new();
@@ -43,30 +35,50 @@ namespace SmortIOTThing.Desktop
         private async void UpdateStatus(object sender, object e)
         {
             TemperatureStatus.Text = _requestManager.GetTemperatureStatus();
-            
-            if (allPoints.Count < 100) 
+            await ShowChart();
+        }
+        private Serie ConvertToSerie(SensorSerie sensorSerie,Color color)
+        {
+            var serie = new Serie
             {
-                if (allPoints.Count < 1)
-                    points.Add(new LinePoint { Value = 20, Timestamp = DateTimeOffset.Now });
-                points = allPoints;
-            }
-            else
+                Name = sensorSerie.Name,
+                SeriesPoints = sensorSerie.SensorPoints.Select(point => 
+                                           new LinePoint 
+                                           { 
+                                               Value = point.Value, 
+                                               Timestamp = point.Timestamp 
+                                           }).ToArray(), 
+                Color = color
+            };
+            return serie;
+        }
+        private async Task ShowChart()
+        {
+
+            List<Serie> series = new();
+            var minTime = DateTimeOffset.Now.AddSeconds(-100);
+            var maxTime = DateTimeOffset.Now;
+            var alarmPointsLower = CreateAlarmLine(minTime, maxTime, 15);
+            var alarmPointsUpper = CreateAlarmLine(minTime, maxTime, 30);
+            foreach (var name in _requestManager.GetSensors().Select(sensor => sensor.Name))
             {
-                points = allPoints.GetRange(allPoints.Count - 100, 100);
+                var sensorSerie = await _requestManager.GetSensorSeriesAsync(name, from: DateTimeOffset.Now.AddSeconds(-100));
+                var serie = ConvertToSerie(sensorSerie, Colors.Purple);
+                series.Add(serie);
             }
-            Random random = new Random();
-            allPoints.Add(new LinePoint { Value = allPoints[^1].Value + (random.NextDouble() - 0.5) / 10, Timestamp = DateTimeOffset.Now });
+            series.Add(new Serie { SeriesPoints = alarmPointsLower.ToArray(), Color = Colors.Red, Name = "Alarm" });
+            series.Add(new Serie { SeriesPoints = alarmPointsUpper.ToArray(), Color = Colors.Red, Name = "Alarm" });
+            await chart.Draw(series.ToArray());
 
+        }
 
-            if (points.Count > 0)
+        private static List<LinePoint> CreateAlarmLine(DateTimeOffset minTime, DateTimeOffset maxTime, double alarmValueUpper)
+        {
+            return new List<LinePoint>
             {
-                
-                List<Serie> series = new();
-                series.Add(new Serie { SeriesPoints = points.ToArray(), Color = Colors.Purple, Name = "Series1" });
-
-                await chart.CreateLineChart(series.ToArray());
-
-            }
+                new LinePoint{Timestamp = minTime , Value =alarmValueUpper},
+                new LinePoint{Timestamp = maxTime , Value =alarmValueUpper}
+            };
         }
 
         private void InitLineChart()
@@ -80,18 +92,16 @@ namespace SmortIOTThing.Desktop
                 TextForegroundAlarm = new SolidColorBrush(Colors.MediumVioletRed)
             };
             chart.Root = root;
+            chart.SegmentsX = 5;
+            chart.SegmentsY = 5;
+            chart.ResolutionY = 2;
             chart.ColorProfile = profile;
-            chart.ResolutionX = new TimeSpan(0, 0, 10);
-            chart.ResolutionY = 0.1;
+            chart.UseResolution = false;
         }
 
         private async void Window_SizeChanged(object sender, WindowSizeChangedEventArgs args)
         {
-            if (points.Count > 0)
-            {
-                List<Serie> series = new();
-                await chart.CreateLineChart(series.ToArray());
-            }
+            await ShowChart();
         }
     }
 
