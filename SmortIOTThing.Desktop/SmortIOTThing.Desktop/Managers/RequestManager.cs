@@ -17,9 +17,8 @@ namespace SmortIOTThing.Desktop.Managers
             return "Welcome";
         }
 
-        public string GetTemperatureStatus()
+        public string GetTemperatureStatus(string name)
         {
-            string name = "Temparature Sensor 1";
             var minTime = DateTimeOffset.Now.AddSeconds(-100);
             var maxTime = DateTimeOffset.Now;
             TimeSpan time = new TimeSpan(0, (maxTime - minTime).Minutes, (maxTime-minTime).Seconds);

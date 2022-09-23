@@ -6,6 +6,10 @@ using SmortIOTThing.Desktop.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.UI;
 
@@ -28,13 +32,44 @@ namespace SmortIOTThing.Desktop
             InitLineChart();
             
         }
+        
 
-        List<LinePoint> points = new();
-        List<LinePoint> allPoints = new();
+        bool alarmActive = false;
+        private async void Alarm()
+        {
+            if (alarmActive)
+                return;
+            alarmActive = true;
+            while (alarmActive)
+            {
+                SensorRectangle1.Fill = new SolidColorBrush( Colors.Red);
+                await Task.Delay(160);
+                SensorRectangle1.Fill = new SolidColorBrush( Colors.Gray);
+                await Task.Delay(40);
+            }
+        }
+
         LineChart chart = new();
         private async void UpdateStatus(object sender, object e)
         {
-            TemperatureStatus.Text = _requestManager.GetTemperatureStatus();
+            var names = _requestManager.GetSensors().Select(sensor => sensor.Name);
+            if(names.Any())
+            {
+                var temp = _requestManager.GetTemperature(names.ElementAt(0));
+                if(temp > 30 || temp < 15)
+                {
+                    Alarm();
+                }
+                else
+                {
+                    alarmActive = false;
+                }
+                if (TemperatureStatus != null)
+                {
+                    TemperatureStatus.Text = _requestManager.GetTemperatureStatus(names.ElementAt(0));
+                }
+
+            }
             await ShowChart();
         }
         private Serie ConvertToSerie(SensorSerie sensorSerie,Color color)
