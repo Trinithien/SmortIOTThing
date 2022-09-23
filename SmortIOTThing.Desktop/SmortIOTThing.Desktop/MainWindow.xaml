@@ -5,7 +5,8 @@
     xmlns:local="using:SmortIOTThing.Desktop"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    SizeChanged="Window_SizeChanged">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -19,10 +20,17 @@
             <RowDefinition Height="10"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="10"/>
-            <RowDefinition />
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="10"/>
+            <RowDefinition />
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="WelcomeMessage" Grid.Column="1" Grid.Row="1"/>
-        <TextBlock x:Name="TemperatureStatus" Grid.Column="3" Grid.Row="1" Grid.RowSpan="3"/>
+        <Rectangle x:Name="SensorRectangle1" Grid.Column="1" Grid.Row="3" Fill="Gray" Grid.RowSpan="1" Opacity=".5" RadiusX="10" RadiusY="10"/>
+        <TextBlock Padding="10" x:Name="TemperatureStatus" Grid.Column="1" Grid.Row="3" Grid.RowSpan="1"/>
+        <Rectangle Grid.Column="1" Grid.Row="5" Fill="Gray" Grid.RowSpan="1" Opacity=".5" RadiusX="10" RadiusY="10"/>
+        <TextBlock Padding="10" x:Name="SocketBlock" Grid.Column="1" Grid.Row="5" Grid.RowSpan="1" TextWrapping="WrapWholeWords"/>
+        <Grid Grid.Column="3" Grid.Row="1" Grid.RowSpan="5" x:Name="root" />
+
+
     </Grid>
 </Window>
