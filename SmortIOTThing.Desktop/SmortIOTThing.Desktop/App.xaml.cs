@@ -45,7 +45,7 @@ namespace SmortIOTThing.Desktop
 
             services.AddTransient<IRequestManager, RequestManager>();
             services.AddTransient<ITemperatureManager, TemperatureManger>();
-            services.AddSingleton<ITemperatureSensorStatus, FakeTemperatureSensorStatus>();
+            services.AddSingleton<ITemperatureSensorStatus, SocketTemperatureSensorStatus>();
 
             services.AddSingleton<MainWindow>();
             return services.BuildServiceProvider();
