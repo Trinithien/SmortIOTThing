@@ -30,9 +30,22 @@ namespace SmortIOTThing.Desktop
             temperatureSensorStatus.StatusChanged += UpdateStatus;
             this.InitializeComponent();
             InitLineChart();
-            
+            InitConnectionBlock();
         }
         
+        private void InitConnectionBlock()
+        {
+            IPAddress ip = _requestManager.GetLocalIPAddress();
+            while(ip == null)
+            {
+                SocketBlock.Text = "Attempting to connect";
+                Task.Delay(100);
+                ip = _requestManager.GetLocalIPAddress();
+            }
+            SocketBlock.Text = $"Socket IP: {ip}:1024";
+            
+
+        } 
 
         bool alarmActive = false;
         private async void Alarm()

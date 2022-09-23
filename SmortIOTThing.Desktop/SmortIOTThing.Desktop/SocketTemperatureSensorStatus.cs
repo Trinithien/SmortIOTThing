@@ -24,13 +24,19 @@ namespace SmortIOTThing.Desktop
             EventHandler handler = StatusChanged;
             handler?.Invoke(this, e);
         }
-        
+
         private async Task OpenSocket()
         {
             Socket listenSocket = new Socket(AddressFamily.InterNetwork,
                                              SocketType.Stream,
                                              ProtocolType.Tcp);
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("10.38.42.92"), 1024);
+            IPAddress ip = null;
+            while(ip == null)
+            {
+                ip = GetLocalIPAddress();
+                await Task.Delay(100);
+            }
+            IPEndPoint ep = new IPEndPoint(ip, 1024);
             listenSocket.Bind(ep);
             listenSocket.Listen(10);
 
@@ -70,7 +76,7 @@ namespace SmortIOTThing.Desktop
                                                  .ToList(),
                             Unit = points.Where(point => point.Name == sensor).First().Unit
                         }
-                        ) ;
+                        );
                 }
                 byte[] msg = Encoding.ASCII.GetBytes(data);
                 handler.Send(msg);
@@ -82,8 +88,22 @@ namespace SmortIOTThing.Desktop
                 };
                 OnStatusChanged(e);
             }
-
         }
+
+        private IPAddress GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip;
+                }
+            }
+            return null;
+        }
+
+        
     }
 }
 

@@ -1,6 +1,8 @@
 ﻿using SmortIOTThing.Desktop.Interfaces;
 using System;
 using System.Linq;
+using System.Net.Sockets;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace SmortIOTThing.Desktop.Managers
@@ -62,5 +64,18 @@ namespace SmortIOTThing.Desktop.Managers
 
         public Task<SensorSerie> GetSensorSeriesAsync(string name, DateTimeOffset from, DateTimeOffset to)
             => _temperatureManager.GetSensorSeriesAsync(name, from, to);
+
+        public IPAddress GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip;
+                }
+            }
+            return null;
+        }
     }
 }

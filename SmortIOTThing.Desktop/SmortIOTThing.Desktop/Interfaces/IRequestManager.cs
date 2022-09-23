@@ -1,6 +1,7 @@
 ﻿
 
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace SmortIOTThing.Desktop.Interfaces
@@ -14,5 +15,6 @@ namespace SmortIOTThing.Desktop.Interfaces
         public Task<SensorSerie> GetSensorSeriesAsync(string name, DateTimeOffset from);
         public Task<SensorSerie> GetSensorSeriesAsync(string name, DateTimeOffset from, DateTimeOffset to);
         public SensorSerie[] GetSensors();
+        public IPAddress GetLocalIPAddress();
     }
 }
