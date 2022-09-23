@@ -20,12 +20,14 @@ namespace SmortIOTThing.Desktop.Managers
         public string GetTemperatureStatus()
         {
             string name = "Temparature Sensor 1";
-            TimeSpan time = new TimeSpan(0,0,5); //Fem sekunder
+            var minTime = DateTimeOffset.Now.AddSeconds(-100);
+            var maxTime = DateTimeOffset.Now;
+            TimeSpan time = new TimeSpan(0, (maxTime - minTime).Minutes, (maxTime-minTime).Seconds);
             float current, average, min, max;
             current = _temperatureManager.GetCurrentTemperature(name);
-            average = _temperatureManager.GetAverageTemperature(name, time);
-            min = _temperatureManager.GetMinTemperature(name, time);
-            max = _temperatureManager.GetMaxTemperature(name, time);
+            average = _temperatureManager.GetAverageTemperature(name, from: minTime,to: maxTime);
+            min = _temperatureManager.GetMinTemperature(name, from: minTime, to: maxTime);
+            max = _temperatureManager.GetMaxTemperature(name, from: minTime, to: maxTime);
 
             string status =
                 $"Sensor: {name}\r\n" +

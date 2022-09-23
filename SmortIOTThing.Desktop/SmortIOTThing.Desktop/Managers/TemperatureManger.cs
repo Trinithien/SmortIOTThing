@@ -37,10 +37,11 @@ namespace SmortIOTThing.Desktop.Managers
                 
             }
         }
-        public float GetAverageTemperature(string name, TimeSpan time)
+        public float GetAverageTemperature(string name, DateTimeOffset from, DateTimeOffset to)
         {
-            Random random = new Random();
-            return (float)(15 + random.NextDouble()*10); //Gir ett random tall mellom 15-25
+            var sensor = _sensors.Where(sensor => sensor.Name == name).FirstOrDefault();
+            var points = sensor.SensorPoints.Where(point => point.Timestamp >= from && point.Timestamp <= to).ToArray();
+            return (float)(points.Average(point => point.Value));
         }
         public float GetCurrentTemperature(string name)
         {
@@ -53,16 +54,26 @@ namespace SmortIOTThing.Desktop.Managers
             return (float)sensor.SensorPoints[^1].Value;
         }
 
-        public float GetMaxTemperature(string name, TimeSpan time)
+        public float GetMaxTemperature(string name, DateTimeOffset from, DateTimeOffset to)
         {
-            Random random = new Random();
-            return (float)(15 + random.NextDouble() * 10); //Gir ett random tall mellom 15-25
+            var sensor = _sensors.Where(sensor => sensor.Name == name).FirstOrDefault();
+            if(sensor == null)
+            {
+                throw new("No sensor with that name");
+            }
+            var points = sensor.SensorPoints.Where(point => point.Timestamp >= from && point.Timestamp <= to).ToArray();
+            return (float)(points.Max(point => point.Value));
         }
 
-        public float GetMinTemperature(string name, TimeSpan time)
+        public float GetMinTemperature(string name, DateTimeOffset from, DateTimeOffset to)
         {
-            Random random = new Random();
-            return (float)(15 + random.NextDouble() * 10); //Gir ett random tall mellom 15-25
+            var sensor = _sensors.Where(sensor => sensor.Name == name).FirstOrDefault();
+            if (sensor == null)
+            {
+                throw new("No sensor with that name");
+            }
+            var points = sensor.SensorPoints.Where(point => point.Timestamp >= from && point.Timestamp <= to).ToArray();
+            return (float)(points.Min(point => point.Value));
         }
 
         public async Task<SensorSerie> GetSensorSeriesAsync(string name)
