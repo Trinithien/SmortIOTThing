@@ -149,6 +149,9 @@ namespace SmortIOTThing.Desktop
 
         private async void Window_SizeChanged(object sender, WindowSizeChangedEventArgs args)
         {
+            root.Measure(new Windows.Foundation.Size(0,0));
+            if (root.ActualHeight == 0)
+                await Task.Delay(100);
             await ShowChart();
         }
     }
