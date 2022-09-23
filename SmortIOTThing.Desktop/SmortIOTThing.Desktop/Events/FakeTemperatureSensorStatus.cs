@@ -3,17 +3,19 @@ using SmortIOTThing.Desktop.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
+using System.Net;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SmortIOTThing.Desktop.Events
 {
-    public class TemperatureSensorStatus : ITemperatureSensorStatus
+    public class FakeTemperatureSensorStatus : ITemperatureSensorStatus
     {
         public event EventHandler StatusChanged = null!;
-        private DateTimeOffset time = DateTimeOffset.Now;
-        public TemperatureSensorStatus()
+        public FakeTemperatureSensorStatus()
         {
             _ = CheckStatusAsync();
         }
@@ -22,12 +24,11 @@ namespace SmortIOTThing.Desktop.Events
             EventHandler handler = StatusChanged;
             handler?.Invoke(this, e);
         }
-        double ki = 0;
         private double Disturbence()
         {
             Random random = new Random();
-            var test =random.Next(0, 10000);
-            if(test < 10)
+            var test = random.Next(0, 10000);
+            if (test < 10)
             {
                 return -random.NextDouble() * 2;
             }
@@ -58,32 +59,32 @@ namespace SmortIOTThing.Desktop.Events
         {
             Random random = new Random();
             lastValues.Add(lastCurrent);
-            lastCurrent = (float)(lastCurrent-(lastCurrent-floor)/1000 + Regulate(22) + Disturbence());
-            if (lastCurrent < 11) 
-            { 
+            lastCurrent = (float)(lastCurrent - (lastCurrent - floor) / 1000 + Regulate(16) + Disturbence());
+            if (lastCurrent < 11)
+            {
                 lastCurrent = 11;
             }
             return lastCurrent;
         }
         private async Task CheckStatusAsync()
         {
-            var periodicTimer = new PeriodicTimer(new TimeSpan(0, 0, 0,0,10));
+            var periodicTimer = new PeriodicTimer(new TimeSpan(0, 0, 0, 0, 10));
             while (await periodicTimer.WaitForNextTickAsync())
             {
                 var e = new TemperatureSensorEventArgs
                 {
                     SensorSeries = new[]
                     {
-                        new SensorSerie 
-                        { 
-                            Name = "Temparature Sensor 1", 
+                        new SensorSerie
+                        {
+                            Name = "Temparature Sensor 1",
                             SensorPoints = new List<SensorPoint>
                             {
-                                new SensorPoint 
-                                { 
-                                    Value = GenerateValue(), 
-                                    Timestamp = DateTimeOffset.Now 
-                                } 
+                                new SensorPoint
+                                {
+                                    Value = GenerateValue(),
+                                    Timestamp = DateTimeOffset.Now
+                                }
                             }
                         }
                     }
@@ -92,5 +93,7 @@ namespace SmortIOTThing.Desktop.Events
             }
         }
 
+
+        
     }
 }
