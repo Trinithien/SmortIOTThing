@@ -5,10 +5,16 @@ using System.IO.Ports;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
-using System;
+using System.Text.Json;
+
+//using System;
 
 Console.WriteLine("Arduino: /dev/ttyACM0");
 Console.WriteLine("Available Ports:");
+List<Sensor> sensors = new List<Sensor>();
+
+
+
 foreach (string s in SerialPort.GetPortNames())
 {
     Console.WriteLine("{0}", s);
@@ -21,12 +27,22 @@ Console.WriteLine("Select comport: ");
 string? comPort = Console.ReadLine(); // Comport velg meg!
 if (comPort == "test" || comPort == "Test")
 {
-    System.Console.WriteLine("testing");
+    Console.WriteLine("testing");
+
+
+    sensors.Add(new Sensor { Timestamp = DateTimeOffset.Now, Value = 20.0, Name = "stringName", Unit = "degris Kelvin"});
+
+    
+    Console.WriteLine(JsonSerializer.Serialize(sensors).ToString());
+
     //sleep();
     StartClient();
+
+    //JsonSerializer.Serialize("sensors").ToString();
     //return 0;
     // IP: 10.38.42.92:1024
 }
+
 static void StartClient()
 {
     byte[] bytes = new byte[1024];
@@ -48,7 +64,11 @@ static void StartClient()
             Console.WriteLine("Socket connected to {0}",
                     sender.RemoteEndPoint?.ToString());
 
-            byte[] msg = Encoding.ASCII.GetBytes("This is a test<EOF>");
+
+            List<Sensor> sensors = new List<Sensor>();
+            sensors.Add(new Sensor { Timestamp = DateTimeOffset.Now, Value = 20.0, Name = "stringName", Unit = "degris Kelvin"});
+            //JsonSerializer.Serialize("sensors");
+            byte[] msg = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(sensors)+"<EOF>");
 
             int bytesSent = sender.Send(msg);
 
@@ -116,4 +136,13 @@ try
 catch (Exception ee)
 {
     Console.WriteLine(ee.Message);
+}
+
+
+public class Sensor
+{
+    public double Value { get; set; }
+    public DateTimeOffset Timestamp { get; set; }
+    public string Name { get; set; } = null!;
+    public string Unit { get; set; } = null!;
 }
