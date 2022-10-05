@@ -9,6 +9,7 @@ using System.Text.Json;
 
 //using System;
 
+double temperature;
 Console.WriteLine("Arduino: /dev/ttyACM0");
 Console.WriteLine("Available Ports:");
 List<Sensor> sensors = new List<Sensor>();
@@ -49,7 +50,7 @@ static void StartClient()
     try
     {
         IPHostEntry host = Dns.GetHostEntry("");
-        IPAddress ipAddress = IPAddress.Parse("10.38.42.92");
+        IPAddress ipAddress = IPAddress.Parse("192.168.130.102");
         System.Console.WriteLine(ipAddress.ToString());
         IPEndPoint remoteEP = new IPEndPoint(ipAddress, 1024);
 
@@ -120,6 +121,8 @@ try
             {
                 string message = port.ReadLine();
                 Console.WriteLine(message);
+                temperature = Convert.ToDouble(message);
+                StartClient();
             }
         }
         catch (TimeoutException)
