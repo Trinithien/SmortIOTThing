@@ -37,14 +37,14 @@ if (comPort == "test" || comPort == "Test")
     Console.WriteLine(JsonSerializer.Serialize(sensors).ToString());
 
     //sleep();
-    StartClient();
+    StartClient(20.0);
 
     //JsonSerializer.Serialize("sensors").ToString();
     //return 0;
     // IP: 10.38.42.92:1024
 }
 
-static void StartClient()
+static void StartClient(double value)
 {
     byte[] bytes = new byte[1024];
     try
@@ -67,7 +67,7 @@ static void StartClient()
 
 
             List<Sensor> sensors = new List<Sensor>();
-            sensors.Add(new Sensor { Timestamp = DateTimeOffset.Now, Value = 20.0, Name = "stringName", Unit = "degris Kelvin"});
+            sensors.Add(new Sensor { Timestamp = DateTimeOffset.Now, Value = value, Name = "stringName", Unit = "degris Kelvin"});
             //JsonSerializer.Serialize("sensors");
             byte[] msg = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(sensors)+"<EOF>");
 
@@ -122,7 +122,7 @@ try
                 string message = port.ReadLine();
                 Console.WriteLine(message);
                 temperature = Convert.ToDouble(message);
-                StartClient();
+                StartClient(temperature);
             }
         }
         catch (TimeoutException)
