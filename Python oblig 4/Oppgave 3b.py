@@ -1,11 +1,12 @@
-import numpy as np
+import numpy as np 
 import matplotlib.pyplot as plt
 
 def f(x, y):
-    return (x**3 - 3*x*y**2)
+    return (x**3 - 3*x*y**2) # Monkeysaddle function
 
-x = np.linspace(-2, 2, 40)
-y = np.linspace(-2, 2, 40)
+# U = [-1,1] X [-1,1]
+x = np.linspace(-1, 1, 40) 
+y = np.linspace(-1, 1, 40)
 
 x, y = np.meshgrid(x, y)
 X = x
