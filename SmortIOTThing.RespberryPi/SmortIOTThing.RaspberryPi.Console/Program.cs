@@ -6,14 +6,17 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 //using System;
 
 double temperature;
 Console.WriteLine("Arduino: /dev/ttyACM0");
 Console.WriteLine("Available Ports:");
-List<Sensor> sensors = new List<Sensor>();
+//List<Sensor> sensors = new List<Sensor>();
 
+//using var db = new SensorContext();
 
 
 foreach (string s in SerialPort.GetPortNames())
@@ -28,11 +31,16 @@ Console.WriteLine("Select comport: ");
 string? comPort = Console.ReadLine(); // Comport velg meg!
 if (comPort == "test" || comPort == "Test")
 {
+
+    using var db = new SensorContext();
     Console.WriteLine("testing");
 
 
+    List<Sensor> sensors = new List<Sensor>();
     sensors.Add(new Sensor { Timestamp = DateTimeOffset.Now, Value = 20.0, Name = "stringName", Unit = "degris Kelvin" });
 
+    db.Add(new Sensor { Timestamp = DateTimeOffset.Now, Value = 20.0, Name = "stringName", Unit = "degris Kelvin" });
+    db.SaveChanges();
 
     Console.WriteLine(JsonSerializer.Serialize(sensors).ToString());
 
@@ -46,6 +54,8 @@ if (comPort == "test" || comPort == "Test")
 
 static void StartClient(double value)
 {
+
+    using var db = new SensorContext();
     byte[] bytes = new byte[1024];
     try
     {
@@ -68,6 +78,9 @@ static void StartClient(double value)
 
             List<Sensor> sensors = new List<Sensor>();
             sensors.Add(new Sensor { Timestamp = DateTimeOffset.Now, Value = value, Name = "stringName", Unit = "degris Kelvin" });
+            db.Add(new Sensor { Timestamp = DateTimeOffset.Now, Value = value, Name = "stringName", Unit = "degris Kelvin" });
+            db.SaveChanges();
+
             //JsonSerializer.Serialize("sensors");
             byte[] msg = Encoding.ASCII.GetBytes(JsonSerializer.Serialize(sensors) + "<EOF>");
 
@@ -144,11 +157,3 @@ catch (Exception ee)
     Console.WriteLine(ee.Message);
 }
 
-
-public class Sensor
-{
-    public double Value { get; set; }
-    public DateTimeOffset Timestamp { get; set; }
-    public string Name { get; set; } = null!;
-    public string Unit { get; set; } = null!;
-}
