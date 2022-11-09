@@ -110,8 +110,8 @@ namespace SmortIOTThing.Desktop
                 var serie = ConvertToSerie(sensorSerie, Colors.LightGray);
                 series.Add(serie);
             }
-            series.Add(new Serie { SeriesPoints = alarmPointsLower.ToArray(), Color = Colors.Red, Name = "Alarm" });
-            series.Add(new Serie { SeriesPoints = alarmPointsUpper.ToArray(), Color = Colors.Red, Name = "Alarm" });
+            series.Add(new Serie { SeriesPoints = alarmPointsLower.ToArray(), Color = Colors.MediumPurple, Name = "Alarm" });
+            series.Add(new Serie { SeriesPoints = alarmPointsUpper.ToArray(), Color = Colors.MediumPurple, Name = "Alarm" });
             await chart.Draw(series.ToArray());
 
         }
