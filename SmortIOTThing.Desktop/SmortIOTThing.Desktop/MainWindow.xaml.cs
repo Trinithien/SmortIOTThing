@@ -73,10 +73,6 @@ namespace SmortIOTThing.Desktop
                 {
                     Alarm();
                 }
-                else
-                {
-                    alarmActive = false;
-                }
                 if (TemperatureStatus != null)
                 {
                     TemperatureStatus.Text = _requestManager.GetTemperatureStatus(names.ElementAt(0));
@@ -153,6 +149,11 @@ namespace SmortIOTThing.Desktop
             if (root.ActualHeight == 0)
                 await Task.Delay(100);
             await ShowChart();
+        }
+
+        private void acknowledgeButton_Click(object sender, RoutedEventArgs e)
+        {
+            alarmActive = false;
         }
     }
 
