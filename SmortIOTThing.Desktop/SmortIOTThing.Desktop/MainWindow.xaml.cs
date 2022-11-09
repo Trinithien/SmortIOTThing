@@ -73,10 +73,6 @@ namespace SmortIOTThing.Desktop
                 {
                     Alarm();
                 }
-                else
-                {
-                    alarmActive = false;
-                }
                 if (TemperatureStatus != null)
                 {
                     TemperatureStatus.Text = _requestManager.GetTemperatureStatus(names.ElementAt(0));
@@ -111,7 +107,7 @@ namespace SmortIOTThing.Desktop
             foreach (var name in _requestManager.GetSensors().Select(sensor => sensor.Name))
             {
                 var sensorSerie = await _requestManager.GetSensorSeriesAsync(name, from: DateTimeOffset.Now.AddSeconds(-100));
-                var serie = ConvertToSerie(sensorSerie, Colors.Purple);
+                var serie = ConvertToSerie(sensorSerie, Colors.LightGray);
                 series.Add(serie);
             }
             series.Add(new Serie { SeriesPoints = alarmPointsLower.ToArray(), Color = Colors.Red, Name = "Alarm" });
@@ -133,10 +129,10 @@ namespace SmortIOTThing.Desktop
         {
             var profile = new ChartColorProfile
             {
-                Background = Colors.Pink,
-                Outline = Colors.Gray,
+                Background = Colors.Gray,
+                Outline = Colors.DarkGray,
                 BacklineColor = Colors.White,
-                TextForeground = new SolidColorBrush(Colors.Gold),
+                TextForeground = new SolidColorBrush(Colors.Gray),
                 TextForegroundAlarm = new SolidColorBrush(Colors.MediumVioletRed)
             };
             chart.Root = root;
@@ -153,6 +149,11 @@ namespace SmortIOTThing.Desktop
             if (root.ActualHeight == 0)
                 await Task.Delay(100);
             await ShowChart();
+        }
+
+        private void acknowledgeButton_Click(object sender, RoutedEventArgs e)
+        {
+            alarmActive = false;
         }
     }
 
