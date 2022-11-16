@@ -1,6 +1,6 @@
 
-const int hot = 25; //hot parameter
-const int cold = 20; //cold parameter
+const int hot = 30; //hot parameter
+const int cold = 15; //cold parameter
 const unsigned long long intervalTemp = 1000;
 unsigned long long prevTempTime=0;
 
@@ -29,13 +29,7 @@ void tempSensor() {
   if (tempC < cold) { //cold
     digitalWrite(2, HIGH); 
     digitalWrite(3, LOW);
-    /*char sz[] = "";
-    char ssz[] = "";
-    dtostrf(tempC,0,2,sz);
-    Serial.println(sz);
-    sprintf(ssz,"TT:%s",sz);
-    Serial.println(ssz);
-    Serial.println(tempC);*/
+
   }
   else if (tempC >= hot) { //Alarm for too hot temp
     digitalWrite(2, LOW);
